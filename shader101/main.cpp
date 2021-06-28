@@ -152,7 +152,7 @@ int main()
 
         // render
         // ------
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // camera/view transformation
@@ -164,13 +164,20 @@ int main()
             // calculate the model matrix for each object and pass it to shader before drawing
             glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
             model = glm::translate(model, cubePositions[i]);
-            glm::mat4 temp(1.0f);
-            temp = glm::rotate(temp, (float)glfwGetTime(), glm::vec3(1.0f, 0.3f, 0.5f));
-            temp = glm::transpose(temp);
-            cubes[i]->SetModelMatrix(temp*model);
+           // glm::mat4 temp(1.0f);
+            model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.3f, 0.5f));
+            //temp = glm::transpose(temp);
+            cubes[i]->SetModelMatrix(model);
+            program->use();
+            program->setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+            program->setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+            //program->setVec3("lightPos", 7.0f, 2.0f, 4.0f);
+            program->setVec3("lightPos", g_camera->Position);
+            program->setVec3("viewPos", g_camera->Position);
+     
             cubes[i]->Draw(program, view);
         }
-
+       // std::cout << glm::vec3(view[3]) << std::endl;
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
